@@ -40,9 +40,9 @@ export class UserService {
     return this.userRepository.find({
       skip: offset,
       take: itemPerPage,
-      order:{
-        createdAt:'ASC'
-      }
+      order: {
+        createdAt: 'ASC',
+      },
     });
   }
 
@@ -55,8 +55,20 @@ export class UserService {
     }
     return user;
   }
-  async findByUserName(userName: string) {
-    const user = await this.userRepository.findOneBy({ userName });
+  async findByUserName(userName: string, password: boolean = false) {
+    let user: User | null = null;
+    if (password) {
+      user = await this.userRepository.findOne({
+        select: {
+          password: true,
+        },
+        where: {
+          userName,
+        },
+      });
+    } else {
+      user = await this.userRepository.findOneBy({ userName });
+    }
     if (!user) {
       throw new NotFoundException({
         message: 'user not found',

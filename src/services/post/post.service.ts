@@ -19,8 +19,8 @@ export class PostService {
   ) {}
 
   async findAll(query?: PaginationQueryDto & PostQuery) {
-    const { page = 1, userName } = query;
-    const offset = (page - 1) * itemPerPage;
+    const { page, userName } = query;
+    const offset = ((Number(page) ? page : 1) - 1) * itemPerPage;
     let [posts, number] = [[], 0];
     if (!userName) {
       [posts, number] = await this.postRepository.findAndCount({
@@ -45,9 +45,9 @@ export class PostService {
         take: itemPerPage,
         order: { createdAt: 'asc' },
       });
-    } 
+    }
     return {
-      data:posts,
+      data: posts,
       pages: Math.ceil(number / itemPerPage),
     };
   }
